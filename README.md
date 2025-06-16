@@ -160,6 +160,11 @@ The server is built with:
 
 MIT License
 
+## Prior work:
+
+AI Assistant MCP Server by Eduard
+https://github.com/eduardm/ai_pairs_with_ai
+
 ## Contributing
 
 1. Fork the repository
