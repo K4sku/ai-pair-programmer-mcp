@@ -1,5 +1,10 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
+# encoding: utf-8
+
+# Force UTF-8 encoding
+Encoding.default_external = Encoding::UTF_8
+Encoding.default_internal = Encoding::UTF_8
 
 require 'json'
 require 'logger'
@@ -13,13 +18,9 @@ gemfile do
 end
 
 
-# Set up logging as global variable
-log_dir = File.expand_path('~/.claude-mcp-servers/ai-pair-programmer-mcp')
-FileUtils.mkdir_p(log_dir)
-log_file = File.join(log_dir, 'server.log')
-
-$logger = Logger.new(log_file)
-$logger.level = ENV['DEBUG'] == '1' ? Logger::DEBUG : Logger::INFO
+# Set up logging - only enable when MCP_DEBUG=1 to avoid protocol interference
+$logger = Logger.new(STDERR)
+$logger.level = Logger::DEBUG
 $logger.formatter = proc do |severity, datetime, progname, msg|
   "#{datetime.strftime('%Y-%m-%d %H:%M:%S')} - #{severity} - #{msg}\n"
 end
@@ -63,8 +64,7 @@ $logger.info("API key loaded from environment variable: OPENROUTER_API_KEY")
 RubyLLM.configure do |llm_config|
   llm_config.openrouter_api_key = api_key
   llm_config.default_model = MODELS_CONFIG[:models][MODELS_CONFIG[:default_model]][:model_id]
-  llm_config.log_file = File.join(log_dir, 'ruby_llm.log')
-  llm_config.log_level = :debug
+  llm_config.logger = $logger
 end
 
 $logger.info("AI Pair Programmer MCP Server initialized with RubyLLM")
@@ -98,14 +98,19 @@ def call_ruby_llm(prompt, model_name, temperature: 0.3)
   $logger.debug("RubyLLM request - Model: #{model_name} (#{model_id}), Temperature: #{temperature}")
 
   begin
+    # Ensure prompt is properly encoded as UTF-8
+    prompt = prompt.encode('UTF-8', invalid: :replace, undef: :replace)
+    
     # Create a chat instance with the specific model
     chat = RubyLLM.chat(model: model_id, provider: :openrouter)
     chat = chat.with_temperature(temperature)
     
     response = chat.ask(prompt)
     
-    $logger.debug("RubyLLM response received - Length: #{response.content.length}")
-    response.content
+    # Ensure response is properly encoded
+    content = response.content.encode('UTF-8', invalid: :replace, undef: :replace)
+    $logger.debug("RubyLLM response received - Length: #{content.length}")
+    content
   rescue => e
     error_msg = "RubyLLM API error: #{e.message}"
     $logger.error(error_msg)

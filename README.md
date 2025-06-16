@@ -41,7 +41,7 @@ ruby ./server.rb
 The server will:
 - Automatically install missing gems on first run
 - Start with STDIO transport for MCP clients
-- Log to `~/.claude-mcp-servers/ai-pair-programmer-mcp/`
+- Log to STDERR which should be saved by your MCP Host.
 
 ###
 
@@ -128,29 +128,6 @@ I need ideas for improving user onboarding in my Ruby on Rails app. The current 
 ### General Collaboration  
 ```
 I'm struggling with this algorithm problem. Can you help me think through it step by step?
-```
-
-## Development
-
-### Debugging
-
-Enable debug logging:
-
-```bash
-DEBUG=1 ./server.rb
-```
-
-This will log detailed information about:
-- Tool calls and arguments
-- API requests and responses  
-- Error details
-
-### Log Files
-
-Logs are written to:
-```
-~/.claude-mcp-servers/ai-pair-programmer-mcp/server.log
-~/.claude-mcp-servers/ai-pair-programmer-mcp/ruby_llm.log
 ```
 
 ## Architecture
