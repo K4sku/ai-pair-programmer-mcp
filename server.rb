@@ -1,29 +1,17 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-# Inline bundler setup - automatically installs gems if missing
-begin
-  require 'fast_mcp'
-  require 'ruby_llm'
-  require 'json'
-  require 'logger'
-  require 'fileutils'
-rescue LoadError => e
-  missing_gem = e.message.match(/cannot load such file -- (.+)/)[1]
-  puts "Installing missing gem: #{missing_gem}"
-  
-  case missing_gem
-  when 'fast_mcp'
-    system('gem install fast-mcp') || exit(1)
-  when 'ruby_llm'
-    system('gem install ruby_llm') || exit(1)
-  else
-    puts "Unknown gem: #{missing_gem}"
-    exit(1)
-  end
-  
-  retry
+require 'json'
+require 'logger'
+require 'fileutils'
+require 'bundler/inline'
+
+gemfile do
+  source 'https://rubygems.org'
+  gem 'fast-mcp', "~> 1.5", require: 'fast_mcp'
+  gem 'ruby_llm', "~> 1.3"
 end
+
 
 # Set up logging as global variable
 log_dir = File.expand_path('~/.claude-mcp-servers/ai-pair-programmer-mcp')
