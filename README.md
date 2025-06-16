@@ -43,6 +43,11 @@ The server will:
 - Start with STDIO transport for MCP clients
 - Log to `~/.claude-mcp-servers/ai-pair-programmer-mcp/`
 
+###
+
+If the MCP fails to start when lunching Claude Code it's probably due to timeout.
+The bundler is installing dependecies. To fix that either set an envvar `MCP_TIMEOUT=10000` (10s) or start the MCP server in the terminal first.
+
 ## Configuration
 
 ### Models
